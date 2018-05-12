@@ -44,11 +44,20 @@ copy-release:
 # we use the default Oort setup (hermit as reasoner)
 
 envo-edit-module-merge.owl: envo-edit.owl
-	owltools $(USECAT) $<  --merge-imports-closure -o $@
+	robot merge -i $< -o $@ --collapse-import-closure true
+	#owltools $(USECAT) $<  --merge-imports-closure -o $@
 	#owltools $(USECAT) $<  $(patsubst %, --remove-import-declaration $(OBO)/envo/modules/%.owl, $(MODS)) $(ALL_MODS_OWL) --merge-support-ontologies -o $@
 
 envo.owl envo-simple.owl: envo-edit-module-merge.owl
-	ontology-release-runner --catalog-xml catalog-v001.xml --reasoner elk  --skip-format owx --skip-format obo  --error-report envo-errors.txt $< --allow-overwrite --asserted --simple
+robot reason --reasoner ELK \
+ --input $^ \
+  --output $@ \
+  --annotate-inferred-axioms true \
+  --remove-redundant-subclass-axioms true \
+  --exclude-duplicate-axioms true
+ 
+  
+#	ontology-release-runner --catalog-xml catalog-v001.xml --reasoner elk  --skip-format owx --skip-format obo  --error-report envo-errors.txt $< --allow-overwrite --asserted --simple
 ##	ontology-release-runner --catalog-xml catalog-v001.xml  --skip-format owx --run-obo-basic-dag-check --error-report envo-errors.txt $< --allow-overwrite --asserted --simple
 
 #envo.owl: envo-edit.owl
@@ -103,7 +112,7 @@ ENVO_IMPORTS_BASE_URI = $(OBO)/envo
 IMPORTS = pato uberon chebi ro pco foodon go ncbitaxon sdgio
 
 # Make this target to regenerate ALL
-all_imports: $(patsubst %, imports/%_import.owl,$(IMPORTS)) $(patsubst %, imports/%_import.obo,$(IMPORTS))
+all_imports: $(patsubst %, imports/%_import.owl,$(IMPORTS)) 
 
 SEEDS= $(patsubst %, imports/%_terms.txt,$(IMPORTS))
 
