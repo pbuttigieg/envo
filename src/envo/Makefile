@@ -49,14 +49,13 @@ envo-edit-module-merge.owl: envo-edit.owl
 	#owltools $(USECAT) $<  $(patsubst %, --remove-import-declaration $(OBO)/envo/modules/%.owl, $(MODS)) $(ALL_MODS_OWL) --merge-support-ontologies -o $@
 
 envo.owl envo-simple.owl: envo-edit-module-merge.owl
-robot reason --reasoner ELK \
- --input $^ \
-  --output $@ \
-  --annotate-inferred-axioms true \
-  --remove-redundant-subclass-axioms true \
-  --exclude-duplicate-axioms true
- 
-  
+	robot reason --reasoner ELK \
+	  --input $^ \
+	  --output $@ \
+	  --annotate-inferred-axioms true \
+	  --remove-redundant-subclass-axioms true \
+	  --exclude-duplicate-axioms true
+
 #	ontology-release-runner --catalog-xml catalog-v001.xml --reasoner elk  --skip-format owx --skip-format obo  --error-report envo-errors.txt $< --allow-overwrite --asserted --simple
 ##	ontology-release-runner --catalog-xml catalog-v001.xml  --skip-format owx --run-obo-basic-dag-check --error-report envo-errors.txt $< --allow-overwrite --asserted --simple
 
@@ -151,7 +150,7 @@ imports/sdgio_import.owl: mirror/sdgio.owl imports/sdgio_terms.txt
 imports/chebi_import.owl: mirror/chebi.owl imports/chebi_terms.txt
 	$(ROBOT) extract -i $< -T imports/chebi_terms.txt --method BOT -O $(ENVO_IMPORTS_BASE_URI)/$@ -o $@
 .PRECIOUS: imports/%_import.owl
-	
+
 # FOODON: Use ROBOT, driven entirely by terms lists NOT from source ontology
 imports/foodon_import.owl: mirror/foodon.owl imports/foodon_terms.txt
 	$(ROBOT) extract -i $< -T imports/foodon_terms.txt --method BOT -O $(ENVO_IMPORTS_BASE_URI)/$@ -o $@
@@ -377,7 +376,7 @@ subsets/envoCesab.owl: subsets/envo-basic.obo
 	owltools $< --extract-ontology-subset --fill-gaps --subset envoCesab --iri $(OBO)/envo/$@ -o $@
 subsets/envoCesab.obo: subsets/envoCesab.owl
 	owltools $< -o -f obo $@
-	
+
 subsets/envoAstro.owl: subsets/envo-basic.obo
 	owltools $< --extract-ontology-subset --fill-gaps --subset envoAstro --iri $(OBO)/envo/$@ -o $@
 subsets/envoAstro.obo: subsets/envoAstro.owl
