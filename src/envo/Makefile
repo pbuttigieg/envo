@@ -45,16 +45,12 @@ copy-release:
 
 envo-edit-module-merge.owl: envo-edit.owl
 	robot merge -i $< -o $@ --collapse-import-closure true
+
 	#owltools $(USECAT) $<  --merge-imports-closure -o $@
 	#owltools $(USECAT) $<  $(patsubst %, --remove-import-declaration $(OBO)/envo/modules/%.owl, $(MODS)) $(ALL_MODS_OWL) --merge-support-ontologies -o $@
 
 envo.owl envo-simple.owl: envo-edit-module-merge.owl
-robot reason --reasoner ELK \
- --input $^ \
-  --output $@ \
-  --annotate-inferred-axioms true \
-  --remove-redundant-subclass-axioms true \
-  --exclude-duplicate-axioms true
+	robot reason --reasoner ELK --input $^ --output $@   --annotate-inferred-axioms true --remove-redundant-subclass-axioms true --exclude-duplicate-axioms true
  
   
 #	ontology-release-runner --catalog-xml catalog-v001.xml --reasoner elk  --skip-format owx --skip-format obo  --error-report envo-errors.txt $< --allow-overwrite --asserted --simple
